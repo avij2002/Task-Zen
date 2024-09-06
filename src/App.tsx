@@ -1,9 +1,12 @@
 import "./App.css";
+import TodoList from "./components/TodoList";
 
 function App() {
   return (
     <>
-      <h1>Hello From extension</h1>
+      <div className="h-[500px] w-[500px] ml-auto mr-auto p-4 shadow-lg">
+        <TodoList />
+      </div>
     </>
   );
 }
