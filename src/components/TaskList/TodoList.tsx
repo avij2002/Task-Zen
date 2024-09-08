@@ -1,6 +1,6 @@
 import { Divider } from "@mui/material";
-import TodoListHeader from "./TodoListHeader";
-import Task from "./Task/Task";
+import TodoListHeader from "./TaskListHeader/TodoListHeader";
+import TaskListBody from "./TaskListBody/TaskListBody";
 
 const TodoList = () => {
   return (
@@ -10,9 +10,7 @@ const TodoList = () => {
         variant="middle"
         sx={{ marginTop: "20px", borderWidth: "1px" }}
       />
-      <div id="todoList-body">
-        <Task title="Task1" />
-      </div>
+      <TaskListBody />
     </div>
   );
 };
