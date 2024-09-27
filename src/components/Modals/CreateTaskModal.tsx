@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext, useRef, useEffect } from "react";
 import { Typography, Modal, Box, TextField, IconButton } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { TaskContext } from "../../contexts/TaskContext";
@@ -26,13 +26,22 @@ const CreateTaskModal = ({
     setTasks: () => {},
   };
 
+  const storeTaskToChromeStorage = (tasks: ITask[]) => {
+    console.log(tasks)
+    chrome.storage.sync.set({ task_zen_task: tasks }).then(() => {
+      console.log("Tasks stored to Chrome storage");
+    })
+  };
+
   const handleAddTask = () => {
     const value = enteredTask?.current?.value || null;
     const task: ITask = {
       title: value || "",
       isCompleted: false,
     };
-    if (value) setTasks([...tasks, task]);
+    if (value) {
+      setTasks([...tasks, task]);
+    }
     handleCreateTaskModalClose();
   };
 
@@ -42,6 +51,10 @@ const CreateTaskModal = ({
       handleAddTask();
     }
   };
+
+  useEffect(() => {
+    storeTaskToChromeStorage(tasks);
+  }, [tasks]);
 
   console.log(tasks);
 
