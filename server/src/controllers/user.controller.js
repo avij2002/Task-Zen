@@ -2,6 +2,22 @@ import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import { ENDUSER_COOKIES } from "../utils/userUtils.js";
+
+const generateJWTToken = async (userID) => {
+  try {
+    const user = await User.findById(userID);
+    const token = user.generateJWTToken();
+    return token;
+  } catch (error) {
+    throw new ApiError(500, "Something went wrong while creating Token", error);
+  }
+};
+
+const cookieOptions = {
+  httpOnly: true,
+  secure: true,
+};
 
 const registerUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -52,13 +68,25 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Invalid user credentials");
   }
 
+  const token = await generateJWTToken(user._id);
+
   const loggedInUser = await User.findById(user._id).select("-password");
 
-  return res.status(200).json(
-    new ApiResponse(200, "User Logges in Successfully", {
-      user: loggedInUser,
-    })
-  );
+  return res.status(200)
+    .cookie(ENDUSER_COOKIES.TASK_ZEN_TOKEN, token, cookieOptions)
+    .json(
+      new ApiResponse(200, "User Logges in Successfully", {
+        user: loggedInUser,
+      })
+    );
 });
 
-export { registerUser, loginUser };
+const logoutUser = asyncHandler(async (req, res) => {
+  const user = req.user;
+
+  return res.status(200)
+    .cookie(ENDUSER_COOKIES.TASK_ZEN_TOKEN, '', cookieOptions)
+    .json(new ApiResponse(200, "User Logged out successfully", {}));
+});
+
+export { registerUser, loginUser, logoutUser };

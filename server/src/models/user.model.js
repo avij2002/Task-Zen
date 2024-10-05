@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 const userSchema = Schema({
   email: {
@@ -13,6 +14,9 @@ const userSchema = Schema({
     type: String,
     required: [true, "Password is required"],
   },
+  token: {
+    type: String
+  }
 });
 
 userSchema.pre("save", async function (next) {
@@ -23,6 +27,15 @@ userSchema.pre("save", async function (next) {
 
 userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
+};
+
+userSchema.methods.generateJWTToken = function () {
+  return jwt.sign({
+    _id: this._id,
+    email: this.email
+  }, process.env.JWT_TOKEN_SECRET, {
+    expiresIn: process.env.JWT_TOKEN_EXPIRY
+  });
 };
 
 export const User = model("user", userSchema);

@@ -1,11 +1,10 @@
-import express from "express";
+import express, { urlencoded } from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import taskRouter from "./routes/task.routes.js";
 import userRouter from "./routes/user.routes.js";
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-app.use(express.json());
 
 app.use(
   cors({
@@ -13,6 +12,10 @@ app.use(
     credentials: true,
   })
 );
+
+app.use(express.json({ limit: "16kb" }));
+app.use(urlencoded({ extended: true, limit: "16kb" }));
+app.use(cookieParser());
 
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/task", taskRouter);
