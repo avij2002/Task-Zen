@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 const verifyLoggedInUser = asyncHandler(async (req, res, next) => {
     try {
         const token = req.cookies?.task_zen_token ||
-            req.header("Authorization").replace("Bearer ", "");
+            req.header("Authorization")?.replace("Bearer ", "");
 
         if (!token) {
             throw new ApiError(401, "Unauthorized request");
@@ -22,7 +22,7 @@ const verifyLoggedInUser = asyncHandler(async (req, res, next) => {
         req.user = user;
         next();
     } catch (error) {
-        new ApiError(401, error?.message || "Invalid access Token");
+        throw new ApiError(401, error?.message || "Invalid access Token");
     }
 });
 
